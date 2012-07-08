@@ -1,0 +1,91 @@
+<script type="text/javascript">
+
+// The bulk of the JavaScript functions are in graphit_it.js
+
+var series = new Array() ;
+var maxY  ;
+var startDate ;
+var SiteID ;
+var SiteUrl ;
+var RangeOfData ;
+var Records = 0;
+var First ;
+var Last ;
+var SpanOfTime ;
+var NumPoints = 100 ;
+var Number_of_ticks = 12 ; // should not change much, number of tick across the x-axis 
+var json_raw ;
+var str = "";
+var i = 0 ;
+var PlotStartDate = new Date (Date.now()) ; 
+var PlotStopDate = new Date (Date.now()) ;
+
+PlotStartDate.add_days(-6) ; // straddle the current day
+PlotStopDate.add_days(1) ; 
+
+	$(document).ready(function(){ 
+		$('#max_y').val(maxY);
+		$('#number_of_ticks').val(Number_of_ticks);
+		$('#plotstartdate').val(to_month_day(PlotStartDate) );		
+		$('#plotstopdate').val(to_month_day(PlotStopDate) );	  
+		site_check() ;
+	
+	});
+		
+	</script>
+	
+    <div class="container">
+
+      <div class="content">
+        <div class="row">
+          <div class="span14">
+			
+			<table class="zebra-striped">
+			  <tr>
+				<th>Site</th>
+			    <th>Records</th>
+			    <th>First</th>
+			    <th>Last</th>
+				<th>Span Hrs</th>
+			  </tr>
+			  <tr>
+				<td><%= select_tag "site_select", options_for_select(@sites_for_select) %></td>
+			    <td><div id="records"></div></td>
+			    <td><div id="first"></div></td>
+			    <td><div id="last"></div></td>
+				<td><div id="spanoftime"></div></td>
+			  </tr>
+			</table>
+			
+			<div id="chartdiv" ></div>
+			
+			<br>
+			<b>Graph Data</b>
+			<table class="zebra-striped">
+			  <tr>
+				<th>Start Date</th>
+			    <th>End Date</th>
+				<th>Records in Graph Data</th>
+			  </tr>
+			  <tr>
+			    <td><input type="text" id="plotstartdate"></td>
+			    <td><input type="text" id="plotstopdate"></td>
+				<td><input type="text" id="plotspan"></td>
+			  </tr>
+			</table>
+
+			<a href="#"onclick="show_get(series);" class="btn info">Redraw Graph</a>	<br><br>
+			<a href="#"onclick="json_get();" class="btn info">Refresh Data</a>	<br>
+
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <p>&copy; Company 2011</p>
+      </footer>
+
+    </div> <!-- /container -->
+
+  </body>
+</html>

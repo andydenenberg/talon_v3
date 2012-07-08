@@ -1,0 +1,90 @@
+<script type="text/javascript">
+
+	$(document).ready(function(){ 
+	    var s1 = [['OK', <%= @ok %>],['WARNING', <%= @warning %>],['NO_CONNECT', <%= @unable %>]];
+
+	    var plot8 = $.jqplot('pie8', [s1], {
+//			title: { 
+//				text: 'System Status',
+//	            fontSize: '16pt'
+//	        },  
+	        grid: {
+	            drawBorder: false, 
+	            drawGridlines: false,
+	            background: '#ffffff',
+	            shadow:false
+	        },
+			gridPadding: {top:0, bottom:0, left:0, right:0},
+			seriesColors:['#46A546', '#F89406', '#C43C35'],
+	        axesDefaults: {
+
+	        },
+	        seriesDefaults:{
+	            renderer:$.jqplot.PieRenderer,
+	            rendererOptions: {
+	                showDataLabels: true,
+					padding: 10		            
+	            }
+	        },
+	        legend:{
+	            show:false, 
+				border: 'none',
+	            placement: 'outside', 
+	            rendererOptions: {
+	                numberRows: 3
+	            }, 
+	            location:'s',
+	            marginTop: '15px'
+	        }
+	    }); 
+	});
+
+
+	</script>
+	
+    <div class="container">
+
+      <div class="content">
+        <div class="page-header">
+          <h1><small>Keeping an eye on critical information</small></h1>
+        </div>
+        <div class="row">
+          <div class="span10">
+            <h3>Sites under watch</h3>
+
+			<table class="zebra-striped">
+			  <tr>
+			    <th>Url</th>
+			    <th>Interval</th>
+			    <th>Status</th>
+			    <th>Delay</th>
+				<th>Last Checked</th>
+			  </tr>
+
+			<% @sites.each do |site| %>
+			  <tr>
+			    <td><%= truncate(site.url, :length => 20) %></td>
+			    <td><%= site.interval %></td>
+			    <td><span class="label <%= server_state_color(site.status) %>"><%= link_to site.status, site %></span></td>
+			    <td><%= number_with_precision(site.delay, :precision => 5 ) %></td>
+				<td><%= site.last_checked != nil ? site.last_checked.strftime("%l:%M %p") : 'not checked' %></td>
+			  </tr>
+			<% end %>
+			</table>
+          </div>
+          <div class="span4">
+            <h3>Status</h3>
+			<div id="pie8" ></div><br>
+			Last Polled: <%= @checker.length > 0 and @checker[0].last_sign_in_at != nil ? @checker[0].last_sign_in_at.strftime("%m/%d %l:%M %p") + ' CST' : 'not checked' %>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <p>&copy; Company 2011</p>
+      </footer>
+
+    </div> <!-- /container -->
+
+  </body>
+</html>

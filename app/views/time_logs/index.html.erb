@@ -1,0 +1,38 @@
+<div class="container">
+
+  <div class="content">
+    <div class="page-header">
+		<h3>Listing time_logs</h3>
+    </div>
+
+<table class="zebra-striped">
+  <tr>
+    <th>Site</th>
+    <th>Checked</th>
+    <th>Status</th>
+    <th>Delay</th>
+    <th>Watcher</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @time_logs.each do |time_log| %>
+  <tr>
+    <td><%= time_log.site_id %></td>
+    <td><%= time_log.checked %></td>
+    <td><%= time_log.status %></td>
+    <td><%= time_log.delay %></td>
+    <td><%= time_log.watcher %></td>
+    <td><%= link_to 'Show', time_log %></td>
+    <td><%= link_to 'Edit', edit_time_log_path(time_log) %></td>
+    <td><%= link_to 'Destroy', time_log, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= page_navigation_links @time_logs %>
+
+<%= link_to 'New Time log', new_time_log_path %>

@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  url: MyString
+  interval: 1
+  active: MyString
+  status: MyString
+  delay: 1.5
+  content: MyString
+  watcher: MyString
+
+two:
+  url: MyString
+  interval: 1
+  active: MyString
+  status: MyString
+  delay: 1.5
+  content: MyString
+  watcher: MyString

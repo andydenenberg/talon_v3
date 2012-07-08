@@ -1,0 +1,42 @@
+<div class="container">
+
+  <div class="content">
+	
+		  <h3>Users</h3>
+
+		<table class="table table-striped">
+		  <thead>
+		    <tr>
+		      <th>ID</th>
+		      <th>Email</th>
+			  <th>Confirmed at:</th>
+			  <th>Last Login Time</th>
+			  <th>Last Login IP Addr</th>
+		      <th>Actions</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <% @users.each do |user| %>
+		      <tr>
+		        <td><%= user.id %></td>
+		        <td><%= link_to user.email, user_path(user) %></td>
+				<td><%= user.confirmed_at %></td>
+				<td><%= link_to user.last_sign_in_at %></td>
+				<td><%= link_to user.last_sign_in_ip %></td>
+		        <td>
+		          <%= link_to 'Edit', edit_user_path(user), :class => 'btn btn-mini' %>
+		          <%= link_to 'Destroy', user_path(user), :method => :delete, :confirm => 'Are you sure?', :class => 'btn btn-mini btn-danger' %>
+		        </td>
+		      </tr>
+		    <% end %>
+		  </tbody>
+		</table>
+
+		<%= link_to 'New', new_user_path, :class => 'btn' %>
+		
+			<br>
+		
+<br><br>
+
+</div>
+</div>

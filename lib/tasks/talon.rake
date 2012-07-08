@@ -1,0 +1,59 @@
+  task :talon => :environment do
+ 
+include SendGrid
+#    Notifier.system_down(25).deliver
+
+require "net/http"
+require "uri"
+require 'rubygems'
+require 'mechanize'
+require 'json'
+
+require 'update'
+require 'checker'
+
+# main loop
+  # Initialize
+    # ARGV[0] is task name for rake
+    if ARGV[1] != nil
+     checker_name = ARGV[1]
+     repo_url = ARGV[2]
+     repo_email = ARGV[3]
+     repo_password = ARGV[4]
+     watcher_delay = (ARGV[5]).to_i
+    
+    else
+      puts "argument list: checker_name('checker' is reserved), repo_url(http://...), repo_email, repo_password, delay"
+      exit 1
+    end
+
+    down_count = 0  # set count_down for number of notifications
+
+   while true # forever
+      talon = Checker.new(repo_url)
+      login = talon.login( repo_email, repo_password )
+      if  login  
+              case checker_name
+                when 'checker'
+                  delay = talon.check_checker
+                  puts delay.to_s + ' seconds' 
+              
+                  if delay > 200 && down_count < 3
+                    down_count += 1
+                    puts 'Delay exceeded 200 seconds'
+                    talon.system_down(down_count)
+                  end
+                
+                else              
+                  puts "\ntop of loop"
+                  check_list = talon.get_list
+                  talon.check_list(check_list, repo_email, repo_password, repo_url, checker_name)
+                end
+       else
+         puts "\nFailed to login to Repo"
+       end
+       talon = nil
+       sleep(watcher_delay)
+    end 
+
+  end  # task end

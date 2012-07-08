@@ -1,0 +1,175 @@
+<style>
+#demo-frame > div.demo { padding: 10px !important; };
+</style>
+<script>
+
+var SiteID = 1 ;
+var count = 0 ;
+
+function json_get() {
+	$.getJSON("/time_logs/control.json",
+	{ site_id:SiteID },
+	function(json_raw){
+//		count = jQuery.parseJSON(json_raw);
+		count = json_raw ;
+		count = count * 2 ;
+		$('#test').html(count) ;
+	});
+}
+
+
+
+
+
+
+$(document).ready(function(){
+  var data = [
+    ['Heavy Industry', 12],['Retail', 9], ['Light Industry', 14], 
+    ['Out of home', 16],['Commuting', 7], ['Orientation', 9]
+  ];
+  var plot1 = jQuery.jqplot ('chart1', [data], 
+    { 
+      seriesDefaults: {
+        // Make this a pie chart.
+        renderer: jQuery.jqplot.PieRenderer, 
+        rendererOptions: {
+          // Put data labels on the pie slices.
+          // By default, labels show the percentage of the slice.
+          showDataLabels: true
+        }
+      }, 
+      legend: { show:false, location: 'e' }
+    }
+  );
+});
+
+$(function() {
+	$( "#slider-range" ).slider({
+		range: true,
+		min: 0,
+		max: 500,
+		values: [ 75, 300 ],
+		slide: function( event, ui ) {
+			$( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
+		}
+	});
+	$( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
+		" - $" + $( "#slider-range" ).slider( "values", 1 ) );
+});
+
+var firstDate = new Date(2010, 8-1, 1);
+var endDate = new Date(2010, 8-1, 31);
+$('#plotstartdate').val(firstDate);
+$('#plotstopdate').val(endDate);
+
+$(function() {
+    var minDate = firstDate;
+    var maxDate = endDate;
+	
+		$( "#slider" ).slider({
+			range: true,
+			min: 0,
+			max: Math.floor((maxDate.getTime() - minDate.getTime()) / 86400000),
+			values: [ 1, 25 ],
+			slide: function( event, ui ) {
+	            var date = new Date(minDate.getTime());
+	            date.setDate(date.getDate() + ui.values[0]);
+	            $('#plotstartdate').val($.datepicker.formatDate('mm/dd/yy', date));
+	            date = new Date(minDate.getTime());
+	            date.setDate(date.getDate() + ui.values[1]);
+	            $('#plotstopdate').val($.datepicker.formatDate('mm/dd/yy', date));
+			}
+		});
+	});
+
+	$(function() {				
+	  $("#site_select").change(function() {
+		 var id = document.getElementById('site_select').value ;
+			$.getJSON("/sites/site_ids.json",
+			null,
+			function(sites_ids){
+			var url = sites_ids[id] ;
+			alert(id + url) ;	  						
+			});
+		
+	  });
+	});
+
+
+
+
+
+</script>
+	
+    <div class="container">
+
+      <div class="content">
+        <div class="page-header">
+			<h3>Sites under watch</h3>
+        </div>
+
+	        <%= select_tag "site_select", options_for_select(@sites_for_select) %><br>
+	
+			<table class="zebra-striped">
+			  <tr>
+			    <th>Url</th>
+			    <th>Interval</th>
+			    <th>Records</th>
+			    <th>First</th>
+			    <th>Last</th>
+				<th>Span Hrs</th>
+			  </tr>
+			<% @sites.each_with_index do |site, i| %>
+			  <tr>
+			    <td><%= truncate(site.url, :length => 15) %></td>
+			    <td><%= site.interval %></td>
+			    <td><%= @point_range[i][1] %></td>
+			    <td><%= @point_range[i][2] %></td>
+			    <td><%= @point_range[i][3] %></td>
+				<td><%= ((@point_range[i][3] - @point_range[i][2]) / 1.hour).round %></td>
+			  </tr>
+			<% end %>
+			</table>
+
+			<div id="chartdiv" ></div>
+
+			<div class="demo">
+
+			<p>
+				<label for="amount">Price range:</label>
+				<input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;" />
+			</p>
+
+			<div id="slider-range"></div>
+
+			</div><!-- End demo -->
+
+<br><br>
+Plot StartDate: <input type="text" id="plotstartdate"><br />
+Plot StopDate: <input type="text" id="plotstopdate"><br />
+
+<div id="slider"></div>
+<br><br>
+
+			<div class="demo-description">
+			<p>Set the <code>range</code> option to true to capture a range of values with two drag handles.  The space between the handles is filled with a different background color to indicate those values are selected.</p>
+			</div><!-- End demo-description -->
+			
+			<br>
+			<div id="chart1" style="height:300px;width:300px; "></div>
+
+            <h3>Status</h3>
+			Number of records: <%= @number_records %>
+			<div id="test"></div>...<br><br>
+			<a href="#" onclick="json_get()">Get Number</a>
+			
+
+
+      </div>
+
+      <footer>
+        <p>&copy; Company 2011</p>
+      </footer>
+
+    </div> <!-- /container -->
+

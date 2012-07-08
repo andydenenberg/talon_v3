@@ -1,0 +1,40 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Url:</b>
+  <%= @site.url %>
+</p>
+
+<p>
+  <b>Interval:</b>
+  <%= @site.interval %>
+</p>
+
+<p>
+  <b>Active:</b>
+  <%= @site.active %>
+</p>
+
+<p>
+  <b>Status:</b>
+  <%= @site.status %>
+</p>
+
+<p>
+  <b>Delay:</b>
+  <%= @site.delay %>
+</p>
+
+<p>
+  <b>Content:</b>
+  <%= @site.content %>
+</p>
+
+<p>
+  <b>Watcher:</b>
+  <%= @site.watcher %>
+</p>
+
+
+<%= link_to 'Edit', edit_site_path(@site) %> |
+<%= link_to 'Back', sites_path %>

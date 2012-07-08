@@ -1,0 +1,57 @@
+<%= form_for(@site) do |f| %>
+  <% if @site.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@site.errors.count, "error") %> prohibited this site from being saved:</h2>
+
+      <ul>
+      <% @site.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :url %><br />
+    <%= f.text_field :url %>
+  </div>
+  <div class="field">
+    <%= f.label :interval %><br />
+    <%= f.number_field :interval %>
+  </div>
+  <div class="field">
+    <%= f.label :active %><br />
+    <%= f.text_field :active %>
+  </div>
+  <div class="field">
+    <%= f.label :down_count %><br />
+    <%= f.text_field :down_count %>
+  </div>
+  <div class="field">
+    <%= f.label :status %><br />
+    <%= f.text_field :status %>
+  </div>
+  <div class="field">
+    <%= f.label :delay %><br />
+    <%= f.text_field :delay %>
+  </div>
+  <div class="field">
+    <%= f.label :content %><br />
+    <%= f.text_field :content %>
+  </div>
+  <div class="field">
+    <%= f.label :watcher %><br />
+    <%= f.text_field :watcher %>
+  </div>
+  <div class="field">
+    <%= f.label :last_checked %><br />
+    <%= f.text_field :last_checked %>
+  </div>
+  <div class="field">
+    <%= f.label :next_check %><br />
+    <%= f.text_field :next_check %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

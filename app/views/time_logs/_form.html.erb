@@ -1,0 +1,37 @@
+<%= form_for(@time_log) do |f| %>
+  <% if @time_log.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@time_log.errors.count, "error") %> prohibited this time_log from being saved:</h2>
+
+      <ul>
+      <% @time_log.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :site_id %><br />
+    <%= f.text_field :site_id %>
+  </div>
+  <div class="field">
+    <%= f.label :checked %><br />
+    <%= f.text_field :checked %>
+  </div>
+  <div class="field">
+    <%= f.label :status %><br />
+    <%= f.text_field :status %>
+  </div>
+  <div class="field">
+    <%= f.label :delay %><br />
+    <%= f.text_field :delay %>
+  </div>
+  <div class="field">
+    <%= f.label :watcher %><br />
+    <%= f.text_field :watcher %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

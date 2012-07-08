@@ -1,0 +1,14 @@
+Monitor Status of critical devices
+
+Keeps track of status and response delays over time.
+
+Each site being monitored has an associated time series.
+The time series records for each site is recorded in a model called time_log.
+
+For simplicity, the system uses uses html form put and post for login and to update the status and time_log info.  Json is used to read info from the repository.
+
+The site checker was originally written in perl, but I decided to keep everything unified in one language, Ruby
+
+Currently there is no separation between checking and logging.  The status flag if set to yes, enables the checker and it will both check and store the result in time_logs.  An improvement would be to allow the device to be check more frequently than the the delays is stored (or discarded).
+
+

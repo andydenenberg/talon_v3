@@ -1,0 +1,30 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Site:</b>
+  <%= @time_log.site_id %>
+</p>
+
+<p>
+  <b>Checked:</b>
+  <%= @time_log.checked %>
+</p>
+
+<p>
+  <b>Status:</b>
+  <%= @time_log.status %>
+</p>
+
+<p>
+  <b>Delay:</b>
+  <%= @time_log.delay %>
+</p>
+
+<p>
+  <b>Watcher:</b>
+  <%= @time_log.watcher %>
+</p>
+
+
+<%= link_to 'Edit', edit_time_log_path(@time_log) %> |
+<%= link_to 'Back', time_logs_path %>

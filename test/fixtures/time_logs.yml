@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  site: 
+  checked: 2012-01-21 10:12:26
+  status: MyString
+  delay: 1.5
+  watcher: MyString
+
+two:
+  site: 
+  checked: 2012-01-21 10:12:26
+  status: MyString
+  delay: 1.5
+  watcher: MyString
