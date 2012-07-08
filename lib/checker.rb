@@ -19,12 +19,6 @@ class Checker
     end
     return login    
   end
-
-  def system_down(down_count)    
-    puts 'down for the count'
-    Notifier.system_down(down_count).deliver
-#    page = @agent.get(@base_url + '/sites/system_down?down_count=' + down_count.to_s )  
-  end
   
   def check_checker
     page = @agent.get(@base_url + '/sites/main.json')
@@ -46,23 +40,27 @@ class Checker
   end
   
   def get_list
-    page = @agent.get(@base_url + '/sites.json')
-    raw_data = page.body
-    list = JSON.parse(raw_data)
-    # fix the format of dates
-    list.each_with_index do |l, i|
-          if l["last_checked"]
-            temp = (l["last_checked"]).split('T')
-            date = temp[0]
-            time = (temp[1]).split('Z')[0] 
-            l["last_checked"] = date + ' ' + time
-          end
-          if l["next_check"]
-            temp = (l["next_check"]).split('T')
-            date = temp[0]
-            time = (temp[1]).split('Z')[0] 
-            l["next_check"] = date + ' ' + time
-          end
+    begin
+        page = @agent.get(@base_url + '/sites.json')
+        raw_data = page.body
+        list = JSON.parse(raw_data)
+        # fix the format of dates
+        list.each_with_index do |l, i|
+              if l["last_checked"]
+                temp = (l["last_checked"]).split('T')
+                date = temp[0]
+                time = (temp[1]).split('Z')[0] 
+                l["last_checked"] = date + ' ' + time
+              end
+              if l["next_check"]
+                temp = (l["next_check"]).split('T')
+                date = temp[0]
+                time = (temp[1]).split('Z')[0] 
+                l["next_check"] = date + ' ' + time
+              end
+         end
+     rescue
+       list = false
      end
      return list
   end
@@ -83,6 +81,18 @@ class Checker
     return status, elapsed
   end
   
+  def notify_if_down(status, down_count, url)
+    if status == 'UNABLE_TO_CONNECT'
+      if down_count < 3  # send notification for 1st three failures
+        down_count += 1
+        notify = Notifier.device_down(down_count, url).deliver
+      end
+    else
+      down_count = 0  # device repsonding, reset down_count
+    end  
+  return down_count  
+  end
+
   def check_list(site_list,repo_email,repo_password,repo_url,checker_name)
     site_list.each_with_index do |cl, i|
           
@@ -96,46 +106,28 @@ class Checker
           if cl["next_check"] && wait > 0
               puts cl["url"] + " is waiting.... " + wait.to_s
           else
-              puts "Wait time has elapsed = "  + wait.to_s
               next_check = Time.now + cl["interval"]                  
               if cl["active"] == 'yes'
                   response = self.monitor(cl["url"],cl["content"])
                   status = response[0]
-                  delay = response[1]
-                  
-                    if status == 'UNABLE_TO_CONNECT'
-                      
-                      puts
-                      puts 'down_count=' + cl['down_count'].to_s
-                      puts 
-                      
-                      if cl['down_count'] < 3  # send notification for 1st three failures
-                        cl['down_count'] += 1
-                        notify = Notifier.device_down(cl['down_count'], cl['url']).deliver
-                      end
-                    else
-                      cl['down_count'] = 0  # device repsonding, reset down_count
-                    end
-
-#                  time_log = [ cl["id"], status, delay, Time.now.strftime("%Y-%m-%d %H:%M:%S"), checker_name ]
+                  delay = response[1]                  
+                  # Notify if device is not responding
+                  cl['down_count'] = self.notify_if_down(status, cl['down_count'], cl['url'])
               else
                   status = 'INACTIVE'
                   delay = 0 
               end
-#              site_checked = [ cl["id"],status, delay, Time.now.strftime("%Y-%m-%d %H:%M:%S"), next_check.strftime("%Y-%m-%d %H:%M:%S"), checker_name, cl['down_count'] ]
               puts i.to_s + " - " + cl["url"] + " - " + status + " - " + delay.to_s + " - " + next_check.strftime("%Y-%m-%d %H:%M:%S")
 
               update = Updater.new(repo_url)
               if update.login(repo_email,repo_password)
                   if status != 'INACTIVE' 
                      time_log_update = update.time_log_new(cl["id"], status, delay, Time.now.strftime("%Y-%m-%d %H:%M:%S"), checker_name)
-                     puts time_log_update #  Need to write this to a log file
                   end              
                   status_update = update.site_checked(cl["id"],status, delay, Time.now.strftime("%Y-%m-%d %H:%M:%S"), next_check.strftime("%Y-%m-%d %H:%M:%S"), checker_name, cl['down_count'] )
-                  puts status_update # Need to write this to a log file
                   update = nil
               else
-                puts 'unable to login'
+                puts 'unable to update'
               end
               
           end

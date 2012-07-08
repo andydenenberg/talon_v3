@@ -1,7 +1,6 @@
   task :talon => :environment do
  
 include SendGrid
-#    Notifier.system_down(25).deliver
 
 require "net/http"
 require "uri"
@@ -47,7 +46,11 @@ require 'checker'
                 else              
                   puts "\ntop of loop"
                   check_list = talon.get_list
-                  talon.check_list(check_list, repo_email, repo_password, repo_url, checker_name)
+                  if check_list
+                    talon.check_list(check_list, repo_email, repo_password, repo_url, checker_name)
+                  else
+                    puts 'unable to get list'
+                  end
                 end
        else
          puts "\nFailed to login to Repo"
