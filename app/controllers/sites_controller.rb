@@ -22,13 +22,6 @@ skip_before_filter :authenticate_user!, :only => [ :main ]
     @sites_for_select = Site.new.sites_for_select
   end
 
-  # make a get request on this method to send off the system_down message
-  def system_down
-    down_count = params[:down_count]
-    Notifier.system_down(down_count).deliver
-    redirect_to root_path
-  end
-
   def main      
     @ok = Site.new.ok
     @unable = Site.new.unable

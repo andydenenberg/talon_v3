@@ -88,48 +88,50 @@ class Checker
           
           # check to see if wait time has elapsed
           if cl["next_check"] 
-              next_check = Time.parse(cl["next_check"])
-              now = Time.now
-              wait = next_check.to_i - now.to_i
+              wait = Time.parse(cl["next_check"]).to_i - Time.now.to_i
           else
               wait = -1 # first time, no previous next_check in db
           end
           
-          if wait > 0
+          if cl["next_check"] && wait > 0
               puts cl["url"] + " is waiting.... " + wait.to_s
           else
               puts "Wait time has elapsed = "  + wait.to_s
-              interval = cl["interval"]
-              next_check = Time.now + interval                  
+              next_check = Time.now + cl["interval"]                  
               if cl["active"] == 'yes'
                   response = self.monitor(cl["url"],cl["content"])
                   status = response[0]
                   delay = response[1]
                   
                     if status == 'UNABLE_TO_CONNECT'
-                      if cl['down_count'] < 3
-                        cl['down_count'] =+ 1
+                      
+                      puts
+                      puts 'down_count=' + cl['down_count'].to_s
+                      puts 
+                      
+                      if cl['down_count'] < 3  # send notification for 1st three failures
+                        cl['down_count'] += 1
                         notify = Notifier.device_down(cl['down_count'], cl['url']).deliver
-                      else
-                        cl['down_count'] == 0
                       end
+                    else
+                      cl['down_count'] = 0  # device repsonding, reset down_count
                     end
 
-                  time_log = [ cl["id"], status, delay, Time.now.strftime("%Y-%m-%d %H:%M:%S"), checker_name ]
+#                  time_log = [ cl["id"], status, delay, Time.now.strftime("%Y-%m-%d %H:%M:%S"), checker_name ]
               else
                   status = 'INACTIVE'
                   delay = 0 
               end
-              site_checked = [ cl["id"],status, delay, Time.now.strftime("%Y-%m-%d %H:%M:%S"), next_check.strftime("%Y-%m-%d %H:%M:%S"), checker_name, down_count ]
+#              site_checked = [ cl["id"],status, delay, Time.now.strftime("%Y-%m-%d %H:%M:%S"), next_check.strftime("%Y-%m-%d %H:%M:%S"), checker_name, cl['down_count'] ]
               puts i.to_s + " - " + cl["url"] + " - " + status + " - " + delay.to_s + " - " + next_check.strftime("%Y-%m-%d %H:%M:%S")
 
               update = Updater.new(repo_url)
               if update.login(repo_email,repo_password)
                   if status != 'INACTIVE' 
-                     time_log_update = update.time_log_new(time_log[0],time_log[1],time_log[2],time_log[3],time_log[4])
+                     time_log_update = update.time_log_new(cl["id"], status, delay, Time.now.strftime("%Y-%m-%d %H:%M:%S"), checker_name)
                      puts time_log_update #  Need to write this to a log file
                   end              
-                  status_update = update.site_checked(site_checked[0],site_checked[1],site_checked[2],site_checked[3],site_checked[4],site_checked[5], site_checked[6])
+                  status_update = update.site_checked(cl["id"],status, delay, Time.now.strftime("%Y-%m-%d %H:%M:%S"), next_check.strftime("%Y-%m-%d %H:%M:%S"), checker_name, cl['down_count'] )
                   puts status_update # Need to write this to a log file
                   update = nil
               else
