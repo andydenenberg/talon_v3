@@ -20,9 +20,10 @@ require 'checker'
      repo_email = ARGV[3]
      repo_password = ARGV[4]
      watcher_delay = (ARGV[5]).to_i
+     order = ARGV[6]
     
     else
-      puts "argument list: checker_name('checker' is reserved), repo_url(http://...), repo_email, repo_password, delay"
+      puts "argument list: checker_name('checker' is reserved), repo_url(http://...), repo_email, repo_password, delay, order"
       exit 1
     end
 
@@ -32,15 +33,19 @@ require 'checker'
       talon = Checker.new(repo_url)
       login = talon.login( repo_email, repo_password )
       if  login  
-              case checker_name
-                when 'checker'
+              case order
+                when 'sec'
                   delay = talon.check_checker
                   puts delay.to_s + ' seconds' 
               
                   if delay > 200 && down_count < 3
                     down_count += 1
                     puts 'Delay exceeded 200 seconds'
-                    talon.system_down(down_count)
+                    notify = Notifier.system_down(down_count).deliver
+                  end
+                  # switch to primary if down for 3 attempts
+                  if down_count == 3
+                    order = 'pri'
                   end
                 
                 else              
