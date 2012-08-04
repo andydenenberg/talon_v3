@@ -5,18 +5,20 @@ require File.expand_path('../application', __FILE__)
 Talon::Application.initialize!
 
 # uncomment the following line to run in development mode
-if Rails.env.development?
- config = YAML.load(File.read('../../../desktop/config.yml'))   
- user_name = config['user_name']
- password = config['password']
-else
- user_name = ENV['SENDGRID_USERNAME']
- password = ENV['SENDGRID_PASSWORD']
-end
+#if Rails.env.development?
+# config = YAML.load(File.read('../../../desktop/config.yml'))   
+# user_name = config['user_name']
+# password = config['password']
+#else
+# user_name = ENV['SENDGRID_USERNAME']
+# password = ENV['SENDGRID_PASSWORD']
+#end
 
 ActionMailer::Base.smtp_settings = {
-  :user_name =>  user_name,
-  :password => password,
+#  :user_name =>  user_name,
+#  :password => password,
+:user_name => 'app2014218@heroku.com',
+:password =>  'nygujkof',
   :domain => "ospreypointpartners.com",
   :address => "smtp.sendgrid.net",
   :port => 587,

@@ -36,7 +36,7 @@ require 'checker'
               case order
                 when 'sec'
                   delay = talon.check_checker
-                  puts delay.to_s + ' seconds' 
+                  puts delay.to_s + ' seconds - Down_count: ' + down_count.to_s
               
                   if delay > 200 && down_count < 3
                     down_count += 1
@@ -44,7 +44,7 @@ require 'checker'
                     notify = Notifier.system_down(down_count).deliver
                   end
                   # switch to primary if down for 3 attempts
-                  if down_count == 3
+                  if down_count == 30
                     order = 'pri'
                   end
                 

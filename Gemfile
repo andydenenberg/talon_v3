@@ -9,9 +9,9 @@ gem 'will_paginate'
 gem 'devise'
 gem 'gmaps4rails'
 
-gem 'therubyracer-heroku', :group => :production
+# gem 'therubyracer-heroku', :group => :production
 group :production do
-gem 'pg'
+# gem 'pg'
 end
 
 group :development, :test do
